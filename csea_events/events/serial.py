@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Event, Btech, Mtech, PhD, AppFeedback
+from .models import Event, Btech, Mtech, PhD, AppFeedback, EventFeedback, Profile
+from django.contrib.auth import get_user_model
 #
 #
 #The serializer module for the API
@@ -9,7 +10,7 @@ from .models import Event, Btech, Mtech, PhD, AppFeedback
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('url','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','comment_for_admin')
+        fields = ('url','event_id','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','comment_for_admin','curr_audience','app','approval')
 
 class BtechSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +33,13 @@ class AppFeedbackserializer(serializers.ModelSerializer):
     class Meta:
         model = AppFeedback
         fields = ('id','url','content')
+
+class EventFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventFeedback
+        fields = ('id','url','content','submiter','rating','to_event')
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('id','url','user','department','program','roll_no','phone_no')

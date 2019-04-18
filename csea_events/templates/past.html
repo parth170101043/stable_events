@@ -21,7 +21,7 @@
                         <h3 class='ui header'>Time: {{i.time}}</h3>
                         <a href="{% url 'polling' i.event_id %}"class='ui tiny primary basic button'>Read More</a>
                         <a href="#" class='ui tiny primary basic button'>Poll</a>
-                        <a href='#' class='ui tiny primary basic button'>Give Feedback</a>
+                        <a href='{% url "feedback" i.event_id  %}' class='ui tiny primary basic button'>Give Feedback</a>
                         {% if display_id == i.requestor %}
                         <a href='#' class='ui tiny purple basic button'>See feedback</a>
                         {% endif %}

@@ -38,7 +38,7 @@
                         <h3 class='ui header'>Time: {{i.time}}</h3>
                         <a href="{% url 'polling' i.event_id %}"class='ui tiny primary basic button'>Read More</a>
                         <a href="#" class='ui tiny primary basic button'>Poll</a>
-                        <a href='#' class='ui tiny orange basic button'>Edit Request</a>   
+                        <a href='{% url "event_edit" i.event_id %}' class='ui tiny orange basic button'>Edit Request</a>   
                         <!-- <a href='#' class='ui tiny primary basic button'>Give Feedback</a>
                         <a href='#' class='ui tiny basic button'>See feedback</a> -->
                     </div>

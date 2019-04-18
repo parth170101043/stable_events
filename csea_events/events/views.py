@@ -1,21 +1,28 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .forms import LoginForm, RegisterForm, EventCreatorForm
+from .forms import LoginForm, RegisterForm, EventCreatorForm, FeedbackForm
 from django.contrib.auth import authenticate, login, get_user_model, logout
 import json
 from django.http import JsonResponse
 import urllib.parse
 from django.contrib.auth.decorators import login_required
-from .models import Event, Btech, Mtech, PhD, AppFeedback
+from .models import Event, Btech, Mtech, PhD, AppFeedback, Profile, EventFeedback
 from  django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .serial import EventSerializer, BtechSerializer, MtechSerializer, PhDSerializer, AppFeedbackserializer
+from .serial import EventSerializer, BtechSerializer, MtechSerializer, PhDSerializer, AppFeedbackserializer, EventFeedbackSerializer, ProfileSerializer
 from datetime import date
 
 # API viewsets for the android app
 #
+
+
+
+
+class ProfileApi(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 class EventApi(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -35,9 +42,12 @@ class PhDApi(viewsets.ModelViewSet):
 class AppFeedbackApi(viewsets.ModelViewSet):
     queryset = AppFeedback.objects.all()
     serializer_class = AppFeedbackserializer
-    
 
-
+class EventFeedbackApi(viewsets.ModelViewSet):
+    queryset = EventFeedback.objects.all()
+    serializer_class = EventFeedbackSerializer
+# todo
+# make the api faq and the web faq sync
 def loginPage(request):
     lform = LoginForm(request.POST or None)
     context ={'form':lform}
@@ -64,6 +74,39 @@ def loginPage(request):
 
 
 User = get_user_model()
+
+
+@login_required(login_url='loginPage')
+def feedback_view(request, id):
+    if request.method == 'GET':
+        eve = Event.objects.filter(event_id__exact=id)
+        feeds = EventFeedback.objects.filter(to_event=eve[0],submiter__exact=str(request.user))
+        try:
+            form = FeedbackForm(initial={'rating':feeds[0].rating,'content':feeds[0].content})
+        except:
+            form = FeedbackForm(initial={'rating':5})
+        return render(request,'feedback.html',{'form':form})
+    else:
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data.get('content')
+            rating = form.cleaned_data.get('rating')
+            concerned_event = Event.objects.filter(event_id__exact=id)
+            search = EventFeedback.objects.filter(to_event__exact=concerned_event[0],submiter__exact=str(request.user))
+            print(search[0].rating)
+            
+            try:
+                search[0].delete()
+                feed= EventFeedback.objects.create(content=content,submiter=str(request.user),rating=rating,to_event=concerned_event[0])
+                feed.save()
+            except:
+                feed= EventFeedback.objects.create(content=content,submiter=str(request.user),rating=rating,to_event=concerned_event[0])
+                feed.save()
+            
+            return redirect('past')
+            # return render(request,'feedback.html',{'form':form})
+        return render(request,'feedback.html',{'form':form})
+
 
 
 
@@ -111,17 +154,24 @@ def registerPage(request):
             program = rform.cleaned_data.get('program')
             roll_no = rform.cleaned_data.get('roll_no')
             phone_no = rform.cleaned_data.get('phone_no')
-            print(roll_no, type(roll_no))
+            # print(roll_no, type(roll_no))
             email = rform.cleaned_data.get('email')
             print(email)
+            mail_stuff = email.split('@')
+            first_name=rform.cleaned_data.get('first_name')
+            last_name=rform.cleaned_data.get('last_name')
             password = rform.cleaned_data.get('password')
-            username = rform.cleaned_data.get('name')
+            username = mail_stuff[0]
+            # username = rform.cleaned_data.get('name')
             add_user = User.objects.create_user(username=username, email=email, password=password)
-
+            add_user.first_name = first_name
+            add_user.last_name = last_name
+            add_user.save()
+            # print(username)
             add_profile = Profile.objects.create(user=add_user,department=department,program=program,roll_no=str(roll_no),phone_no=str(phone_no))
-            return redirect('/')
-        else:
             return redirect('/register/')
+        else:
+            return render(request, 'register.html', {'form':rform})
 
 
 
@@ -151,6 +201,7 @@ def poll_view(request, event_id):
         'event_fee':events[0].fee,
         'contact_info':events[0].contact_info,
         'summary':events[0].summary,
+        'faq':events[0].faq
 
     }
     return render(request,'event_info.html',context)
@@ -205,6 +256,13 @@ def change_password(request):
 
 
 
+def event_edit(request, id): 
+    instance = get_object_or_404(Event, event_id=id)
+    form = EventCreatorForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+        return redirect('my_events')
+    return render(request, 'create_event.html', {'form':form})
 
 
 
@@ -219,31 +277,30 @@ def api_resp(request):
     # content = body['content']
     # username = body['username']
     # password = body['password']
-    if username is None or password is None:
-        try:
-            # asd = request.query_parms.get('content')
-            # body_unicode = request.body.decode('utf-8')
+    try:
+        # asd = request.query_parms.get('content')
+        # body_unicode = request.body.decode('utf-8')
 
-            # data_json = urllib.parse.unquote(body_unicode)
-            data_json = urllib.parse.unquote(request.body.decode('utf-8'))
+        # data_json = urllib.parse.unquote(body_unicode)
+        data_json = urllib.parse.unquote(request.body.decode('utf-8'))
+        # pdb.set_trace()
+        data = json.loads(data_json)
+        for key in data:
             # pdb.set_trace()
-            data = json.loads(data_json)
-            for key in data:
-                # pdb.set_trace()
-                if key == 'username':
-                    print(data[key])
-                    username = data[key]
-                elif key == 'password':
-                    print(data[key])
-                    password = data[key]
-                else:
-                    responseData = {
-                        'authentication':'False',
-                        'reason': 'Too many params in the request'
-                    }
-                    return HttpResponse(json.dumps(responseData), content_type="application/json")
-        except:
-            pass
+            if key == 'username':
+                print(data[key])
+                username = data[key]
+            elif key == 'password':
+                print(data[key])
+                password = data[key]
+            else:
+                responseData = {
+                    'authentication':'False',
+                    'reason': 'Too many params in the request'
+                }
+                return HttpResponse(json.dumps(responseData), content_type="application/json")
+    except:
+        pass
 
     # print(data)
     # for i in data:
@@ -287,3 +344,58 @@ def api_resp(request):
             'reason':'Password or Username is incorrect'
         }
     return HttpResponse(json.dumps(responseData), content_type="application/json")
+@csrf_exempt
+def api_reg(request):
+    args={
+            "error":"send a post request of the following type",
+            "login_request":{
+                "first_name":'<name>',
+                "last_name":'<name>',
+                'email':'<mail>@iitg.ac.in',
+                'password':"<password>",
+                'dept':'<cse/ece/me/ce/dd/bsbe/cl/cst/eee/ma/ph/rt/hss/enc/env/nt/lst>',
+                'prog':'<btech/mtech/phd/msc/msr/ma/bdes/mdes>',
+                'roll_no':'<roll>',
+                'phone_no':'<phone>'
+            }
+        }
+    if request.method == 'POST':
+        try:
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
+            dept = request.POST['dept']
+            prog = request.POST['prog']
+            roll_no = request.POST['roll_no']
+            phone_no = request.POST['phone_no']
+            password = request.POST['password']
+        except:
+            return HttpResponse(json.dumps(args), content_type="application/json")
+        
+        if not first_name or not last_name:
+            return HttpResponse(json.dumps({'error':"first and last name can't be empty"}), content_type="application/json")
+        if not 'iitg.ac.in' in email:
+            return HttpResponse(json.dumps({'error':"use iitg mail only"}), content_type="application/json")
+        if not password:
+            return HttpResponse(json.dumps({'error':"password can't be empty"}), content_type="application/json")
+        if not roll_no or not phone_no or not dept or not prog:
+            return HttpResponse(json.dumps({'error':"some field(s) is/are empty"}), content_type="application/json")
+
+        queryset = User.objects.filter(email=email)
+        if queryset.exists():
+            return HttpResponse(json.dumps({'error':"email already active"}), content_type="application/json")
+        username = email.split('@')[0]
+        add_user = User.objects.create_user(username=username, email=email, password=password)
+        add_user.first_name = first_name
+        add_user.last_name = last_name
+        add_user.save()
+        # print(username)
+        add_profile = Profile.objects.create(user=add_user,department=dept,program=prog,roll_no=str(roll_no),phone_no=str(phone_no))
+        return HttpResponse(json.dumps({'registration status':"success",'username':username}), content_type="application/json")
+
+
+
+    else:
+        
+        return HttpResponse(json.dumps(args), content_type="application/json")
+    return HttpResponse(json.dumps({'naam_bhej na':'chodu'}), content_type="application/json")

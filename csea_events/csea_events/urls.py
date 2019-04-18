@@ -32,7 +32,10 @@ urlpatterns = [
     path('profile/',views.profile_view,name='profile'),
     path('app-login/', views.api_resp, name='app_login'),
     path('past-events/',views.past,name='past'),
-    path('my-events/',views.my_events,name='my_events')
+    path('my-events/',views.my_events,name='my_events'),
+    path('event/edit/<uuid:id>',views.event_edit,name='event_edit'),
+    path('feedback/<uuid:id>',views.feedback_view,name='feedback'),
+    path('acceptor/',views.api_reg)
 
     
 ]

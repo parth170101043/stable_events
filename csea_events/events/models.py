@@ -77,6 +77,23 @@ class Event(models.Model):
     comment_for_admin = models.CharField(max_length=300)
     approval = models.CharField(max_length=50, choices = (('Appr','Approved'),('Pend','Pending'),('Decl','Declined')), default='Pend')
     requestor = models.CharField(max_length=100, blank=True)
+    curr_audience = models.IntegerField(blank=True, null=True)
+
+    faq_question_1 = models.CharField(max_length=500,blank=True)
+    faq_question_2 = models.CharField(max_length=500,blank=True)
+    faq_question_3 = models.CharField(max_length=500,blank=True)
+    faq_question_4 = models.CharField(max_length=500,blank=True)
+    faq_question_5 = models.CharField(max_length=500,blank=True)
+
+
+    faq_answer_1 = models.CharField(max_length=500,blank=True)
+    faq_answer_2 = models.CharField(max_length=500,blank=True)
+    faq_answer_3 = models.CharField(max_length=500,blank=True)
+    faq_answer_4 = models.CharField(max_length=500,blank=True)
+    faq_answer_5 = models.CharField(max_length=500,blank=True)
+
+    faq_android = models.CharField(max_length=7000,blank=True)
+
 
     def __str__(self):
         return self.name
@@ -96,6 +113,20 @@ class Profile(models.Model):
     program = models.CharField(max_length=100,blank=False,choices=program_values)
     roll_no = models.BigIntegerField(unique=True,blank=False)
     phone_no = models.BigIntegerField(blank=False)
+
+    def __str__(self):
+        return str(self.user)
+
+class EventFeedback(models.Model):
+
+    content = models.TextField(blank=False)
+    submiter = models.CharField(max_length=100, blank=True)
+    rating = models.IntegerField()
+    to_event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        name = str(self.submiter)+ "<=User|Event=> "+ str(self.to_event)
+        return name
 
 class AppFeedback(models.Model):
 

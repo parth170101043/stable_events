@@ -13,45 +13,47 @@ class LoginForm(forms.Form):
             }), required=True)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Your password'}), required=True)
 
-
+class FeedbackForm(forms.Form):
+    content = forms.CharField( widget=forms.Textarea )
+    rating = forms.IntegerField(max_value=10, min_value=0)
 
 User = get_user_model()
 
 
-class RegisterForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your Full Name'}),required=True)
-    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your college email (@iitg.ac.in)'}), required=True)
-    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'select a username' }), required=True)
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Your password'}), required=True)
-    confirm_password = forms.CharField( label = 'Confirm Password', widget=forms.PasswordInput(attrs={'placeholder':'Your password (again)'}), required=True)
+# class RegisterForm(forms.Form):
+#     name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your Full Name'}),required=True)
+#     email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your college email (@iitg.ac.in)'}), required=True)
+#     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'select a username' }), required=True)
+#     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Your password'}), required=True)
+#     confirm_password = forms.CharField( label = 'Confirm Password', widget=forms.PasswordInput(attrs={'placeholder':'Your password (again)'}), required=True)
 
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        queryset = User.objects.filter(username = email)
+#     def clean_email(self):
+#         email = self.cleaned_data.get('email')
+#         queryset = User.objects.filter(username = email)
 
-        if 'iitg.ac.in' not in email:
-            raise forms.ValidationError("Enter a valid email")
-        if queryset.exists():
-            raise forms.ValidationError("Email already active")
-        return email
+#         if 'iitg.ac.in' not in email:
+#             raise forms.ValidationError("Enter a valid email")
+#         if queryset.exists():
+#             raise forms.ValidationError("Email already active")
+#         return email
 
 
 
-    def clean_confirm_password(self):
-        passw = self.cleaned_data.get('confirm_password')
-        passw_orig = self.cleaned_data.get('password')
+#     def clean_confirm_password(self):
+#         passw = self.cleaned_data.get('confirm_password')
+#         passw_orig = self.cleaned_data.get('password')
 
-        if passw != passw_orig:
-            raise forms.ValidationError('Both passwords must match')
+#         if passw != passw_orig:
+#             raise forms.ValidationError('Both passwords must match')
         
-        return passw
+#         return passw
 
 
 class EventCreatorForm(ModelForm):
     class Meta:
         model = models.Event
-        fields =['name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','comment_for_admin']
+        fields =['name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2']
 
 
 department_values = (
@@ -85,7 +87,9 @@ program_values = (
     )
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Full Name'}),
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your First Name'}),
+                           required=True)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Last Name'}),
                            required=True)
     email = forms.EmailField(widget=forms.TextInput(attrs={
         'class': 'form-control',
@@ -108,10 +112,10 @@ class RegisterForm(forms.Form):
         print(1,email)
         queryset = User.objects.filter(email=email)
 
-
         if queryset.exists():
             print(1)
             raise forms.ValidationError("Email already active")
+        return email
 
     def clean_confirm_password(self):
         passw = self.cleaned_data.get('confirm_password')
