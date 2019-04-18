@@ -12,7 +12,10 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .serial import EventSerializer, BtechSerializer, MtechSerializer, PhDSerializer, AppFeedbackserializer
+from datetime import date
 
+# API viewsets for the android app
+#
 class EventApi(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -153,12 +156,28 @@ def poll_view(request, event_id):
     return render(request,'event_info.html',context)
 
 
+@login_required(login_url='loginPage')
+def my_events(request):
+    events_past = Event.objects.filter(requestor__exact=request.user, date__lt=date.today()).order_by('-date')
+    events_today = Event.objects.filter(requestor__exact=request.user, date__exact=date.today()).order_by('-date')
+    events_upcoming = Event.objects.filter(requestor__exact=request.user, date__gt=date.today()).order_by('-date')
+    if events_today is None:
+        busy_today='True'
+    else:
+        busy_today='False'
+    
+    return render(request, 'my-events.html', {'display_id':str(request.user), 'events_future':events_upcoming,'events_today':events_today,'events_past':events_past,'busy_today':busy_today})
 
 @login_required(login_url='loginPage')
 def home_page(request):
-    events=Event.objects.all().order_by('date') 
+    events=Event.objects.filter(date__gte=date.today()).order_by('-date') 
     return render(request, 'home.html', {'display_id':str(request.user), 'events':events})
 
+
+@login_required(login_url='loginPage')
+def past(request):
+    events=Event.objects.filter(date__lt=date.today()).order_by('-date') 
+    return render(request, 'past.html', {'display_id':str(request.user), 'events':events})
 
 
 def logout_user(request):

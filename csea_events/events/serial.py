@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import Event, Btech, Mtech, PhD, AppFeedback
-
+#
+#
+#The serializer module for the API
+#
+#
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:

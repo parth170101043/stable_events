@@ -23,14 +23,16 @@ urlpatterns = [
     path('', views.loginPage, name='loginPage'),
     path('home/',views.home_page, name='home_page'),
     path('register/', views.registerPage, name='register'),
-    path('api/', include('events.urls')),
+    path('api/', include('events.urls')),  #forwards any request with api/ to the api urlpatterns
     path('create/', views.create_event, name='create_event'),
     path('logout/', views.logout_user, name='logout'),
     path('event/<uuid:event_id>/',views.poll_view,name='polling'),
     path('event/', views.poll_view, name='poll'),
     path('change_passswd/',views.change_password,name='change_passwd'),
     path('profile/',views.profile_view,name='profile'),
-    path('app-login/', views.api_resp, name='app_login')
+    path('app-login/', views.api_resp, name='app_login'),
+    path('past-events/',views.past,name='past'),
+    path('my-events/',views.my_events,name='my_events')
 
     
 ]

@@ -1,0 +1,73 @@
+{%extends 'base.html'%}
+{% block content%}
+    <div class='col-sm-1'></div>
+    <div class='col-md-9 '>
+        <br>
+            <a href='{% url "create_event" %}' class='ui positive button'>Create event </a>
+            <a href='{% url "home_page" %}' class='ui purple button'>Upcoming events</a>
+            <a href='#' class='ui  orange button '>My events</a>
+            <a href='#' class='ui yellow secondary   button'>CSEA Committee Info</a>
+            <a href='{% url "profile" %}' class='ui primary button'>My Profile</a>
+            <a href='{% url "logout" %}' class='ui negative button'>Logout</a> 
+            <!-- <br><br> -->
+            <h2 style='font-family: Arial, Helvetica, sans-serif'>Events you requested: </h2>
+            
+            
+                <div class='ui segment'>
+                        {% if events_today is not None %}
+                            <h3>Events today:</h3>
+                        {% endif %}
+                        {% for i in events_today%}
+                        <div class='ui segment'>
+                            <h3 class='ui header'>Event Name: {{ i.name}}</h3>
+                            <h3 class='ui header'>Date: {{ i.date}}</h3>
+                            <h3 class='ui header'>Time: {{i.time}}</h3>
+                            <a href="{% url 'polling' i.event_id %}"class='ui tiny primary basic button'>Read More</a>
+                            <a href="#" class='ui tiny primary basic button'>Poll</a>
+                            <!-- <a href='#' class='ui tiny primary basic button'>Give Feedback</a>
+                            <a href='#' class='ui tiny basic button'>See feedback</a> -->
+                        </div>
+                        {% endfor%}
+                        {% if events_future is not None %}
+                            <h3>Upcoming:</h3>
+                        {% endif %}
+                    {% for i in events_future%}
+                    <div class='ui segment'>
+                        <h3 class='ui header'>Event Name: {{ i.name}}</h3>
+                        <h3 class='ui header'>Date: {{ i.date}}</h3>
+                        <h3 class='ui header'>Time: {{i.time}}</h3>
+                        <a href="{% url 'polling' i.event_id %}"class='ui tiny primary basic button'>Read More</a>
+                        <a href="#" class='ui tiny primary basic button'>Poll</a>
+                        <a href='#' class='ui tiny orange basic button'>Edit Request</a>   
+                        <!-- <a href='#' class='ui tiny primary basic button'>Give Feedback</a>
+                        <a href='#' class='ui tiny basic button'>See feedback</a> -->
+                    </div>
+                    {% endfor%}
+                    {%if events_past is not None%}
+                    <h3>
+                        Past Events:
+                    </h3>
+                    {% endif %}
+                    {% for i in events_past%}
+                    <div class='ui segment'>
+                        <h3 class='ui header'>Event Name: {{ i.name}}</h3>
+                        <h3 class='ui header'>Date: {{ i.date}}</h3>
+                        <h3 class='ui header'>Time: {{i.time}}</h3>
+                        <a href="{% url 'polling' i.event_id %}"class='ui tiny primary basic button'>Read More</a>
+                        <a href="#" class='ui tiny primary basic button'>Poll</a>
+                        <!-- <a href='#' class='ui tiny orange basic button'>Edit Request</a>    -->
+                        <!-- <a href='#' class='ui tiny primary basic button'>Give Feedback</a> -->
+                        <a href='#' class='ui tiny purple basic button'>See feedback</a>
+                    </div>
+                    {% endfor%}
+                    {% if events_future is None %}
+                        {% if events_past is None%}
+                            {% if events_today is None %}
+                                <h3>You didn't request any event</h3>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+    </div>
+    
+{%endblock%}
