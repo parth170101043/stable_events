@@ -1,0 +1,123 @@
+from django import forms
+from django.forms import ModelForm
+from django.contrib.auth import get_user_model
+from . import models
+from .models import Event
+from django.forms import formset_factory, modelformset_factory
+
+
+class LoginForm(forms.Form):
+    email = forms.CharField(widget=forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Your @iitg email'
+            }), required=True)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Your password'}), required=True)
+
+
+
+User = get_user_model()
+
+
+class RegisterForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your Full Name'}),required=True)
+    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Your college email (@iitg.ac.in)'}), required=True)
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'select a username' }), required=True)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Your password'}), required=True)
+    confirm_password = forms.CharField( label = 'Confirm Password', widget=forms.PasswordInput(attrs={'placeholder':'Your password (again)'}), required=True)
+
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        queryset = User.objects.filter(username = email)
+
+        if 'iitg.ac.in' not in email:
+            raise forms.ValidationError("Enter a valid email")
+        if queryset.exists():
+            raise forms.ValidationError("Email already active")
+        return email
+
+
+
+    def clean_confirm_password(self):
+        passw = self.cleaned_data.get('confirm_password')
+        passw_orig = self.cleaned_data.get('password')
+
+        if passw != passw_orig:
+            raise forms.ValidationError('Both passwords must match')
+        
+        return passw
+
+
+class EventCreatorForm(ModelForm):
+    class Meta:
+        model = models.Event
+        fields =['name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','comment_for_admin']
+
+
+department_values = (
+        ('cse', 'Computer Science & Engineering'),
+        ('ece', 'Electronics & Communication Engineering'),
+        ('me', 'Mechanical Engineering'),
+        ('ce', 'Civil Engineering'),
+        ('dd', 'Design'),
+        ('bsbe', 'Biosciences & Bioengineering'),
+        ('cl', 'Chemical Engineering'),
+        ('cst', 'Chemical Science & Technology'),
+        ('eee', 'Electronics & Electrical Engineering'),
+        ('ma', 'Mathematics & Computing'),
+        ('ph', 'Engineering Physics'),
+        ('rt', 'Rural Technology'),
+        ('hss', 'Humanities & Social Sciences'),
+        ('enc', 'Centre for Energy'),
+        ('env', 'Centre for Environment'),
+        ('nt', 'Centre for Nanotechnology'),
+        ('lst', 'Centre for Linguistic Science & Technology')
+    )
+program_values = (
+        ('btech', 'BTech'),
+        ('mtech', 'MTech'),
+        ('phd', 'PhD'),
+        ('msc', 'MSc'),
+        ('msr', 'MS-R'),
+        ('ma', 'MA'),
+        ('bdes', 'BDes'),
+        ('mdes', 'MDes')
+    )
+
+class RegisterForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Full Name'}),
+                           required=True)
+    email = forms.EmailField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Your @iitg email'
+    }), required=True)
+    department = forms.CharField(widget=forms.Select(choices=department_values,attrs={'class': 'form-control'}),required=True)
+    program = forms.CharField(widget=forms.Select(choices=program_values, attrs={'class': 'form-control'}),
+                                 required=True)
+    roll_no = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Your Roll Number'}),
+                           required=True)
+    phone_no = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Your Phone Number'}),
+                           required=True)
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Your password'}), required=True)
+    confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(
+        attrs={'class': 'form-control', 'placeholder': 'Your password (again)'}), required=True)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        print(1,email)
+        queryset = User.objects.filter(email=email)
+
+
+        if queryset.exists():
+            print(1)
+            raise forms.ValidationError("Email already active")
+
+    def clean_confirm_password(self):
+        passw = self.cleaned_data.get('confirm_password')
+        passw_orig = self.cleaned_data.get('password')
+
+        if passw != passw_orig:
+            raise forms.ValidationError('Both passwords must match')
+
+        return passw
