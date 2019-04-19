@@ -57,7 +57,7 @@ class Event(models.Model):
     # todo, extend and test by sunday
 
     name = models.CharField(max_length=300)
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular event')
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular event', blank=True)
     fee = models.PositiveIntegerField()
     capacity  = models.PositiveIntegerField()
     target_audience = models.CharField(max_length=300)
@@ -131,3 +131,24 @@ class EventFeedback(models.Model):
 class AppFeedback(models.Model):
 
     content = models.TextField(blank=False)
+
+# {
+#     "name": "null",
+#     "fee": 12,
+#     "capacity": 12,
+#     "target_audience": "12",
+#     "date": "2009-11-11",
+#     "time": "12:00",
+#     "venue": "L1",
+#     "tags": "kl",
+#     "invitees_btech": [4],
+#     "invitees_mtech": [2],
+#     "invitees_phd": [1],
+#     "organisors": "jk",
+#     "contact_info": "kl",
+#     "summary": "kl",
+#     "faq": "kl",
+#     "comment_for_admin": "kl",
+#     "curr_audience": null,
+#     "approval": "Pend"
+# }

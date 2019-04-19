@@ -13,7 +13,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .serial import EventSerializer, BtechSerializer, MtechSerializer, PhDSerializer, AppFeedbackserializer, EventFeedbackSerializer, ProfileSerializer
 from datetime import date
-
+from django.contrib.auth import update_session_auth_hash
 # API viewsets for the android app
 #
 
