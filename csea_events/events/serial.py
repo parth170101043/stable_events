@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('url','event_id','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','comment_for_admin','curr_audience','approval')
+        fields = ('url','event_id','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','image_string','comment_for_admin','curr_audience','approval')
 
 class BtechSerializer(serializers.ModelSerializer):
     class Meta:

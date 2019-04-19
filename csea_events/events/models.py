@@ -78,7 +78,7 @@ class Event(models.Model):
     approval = models.CharField(max_length=50, choices = (('Appr','Approved'),('Pend','Pending'),('Decl','Declined')), default='Pend')
     requestor = models.CharField(max_length=100, blank=True)
     curr_audience = models.IntegerField(blank=True, null=True)
-
+    image_string = models.TextField(blank=True, default= "None")
     faq_question_1 = models.CharField(max_length=500,blank=True)
     faq_question_2 = models.CharField(max_length=500,blank=True)
     faq_question_3 = models.CharField(max_length=500,blank=True)
@@ -92,7 +92,6 @@ class Event(models.Model):
     faq_answer_4 = models.CharField(max_length=500,blank=True)
     faq_answer_5 = models.CharField(max_length=500,blank=True)
 
-    faq_android = models.CharField(max_length=7000,blank=True)
 
 
     def __str__(self):
@@ -142,7 +141,7 @@ class AppFeedback(models.Model):
 #     "venue": "L1",
 #     "tags": "kl",
 #     "invitees_btech": [4],
-#     "invitees_mtech": [2],
+#     "invitees_mtech": [4],
 #     "invitees_phd": [1],
 #     "organisors": "jk",
 #     "contact_info": "kl",
