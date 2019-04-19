@@ -12,5 +12,3 @@ djangorestframework_simplejwt = "*"
 django-filter = "*"
 markdown = "*"
 
-[requires]
-python_version = "3.6"

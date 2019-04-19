@@ -367,7 +367,7 @@ def api_resp(request):
 def api_reg(request):
     args={
             "error":"send a request as following ",
-            "login_request":{
+            "structure":{
                 "first_name":'<name>',
                 "last_name":'<name>',
                 'email':'<mail>@iitg.ac.in',
@@ -428,19 +428,7 @@ def api_reg(request):
                 return HttpResponse(json.dumps(responseData), content_type="application/json")
 
     except:
-        args = {
-                    'error_code':1,
-                    'info':'all keys not found, send a request as follows',
-                    'expected-data':{
-                    "first_name":'<name>',
-                    "last_name":'<name>',
-                    'email':'<mail>@iitg.ac.in',
-                    'password':"<password>",
-                    'dept':'<cse/ece/me/ce/dd/bsbe/cl/cst/eee/ma/ph/rt/hss/enc/env/nt/lst>',
-                    'prog':'<btech/mtech/phd/msc/msr/ma/bdes/mdes>',
-                    'roll_no':'<roll>',
-                    'phone_no':'<phone>'
-                }
+
         return HttpResponse(json.dumps(args), content_type="application/json")
     
 
@@ -459,7 +447,7 @@ def api_reg(request):
     username = email.split('@')[0]
 
     test = Profile.objects.filter(roll_no__exact=roll_no)
-    if test is not None:
+    if test.count() != 0:
         return HttpResponse(json.dumps({'error':1,'reason':'roll_no already active'}), content_type="application/json")
 
     add_user = User.objects.create_user(username=username, email=email, password=password)
