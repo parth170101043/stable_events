@@ -93,7 +93,7 @@ def feedback_view(request, id):
             rating = form.cleaned_data.get('rating')
             concerned_event = Event.objects.filter(event_id__exact=id)
             search = EventFeedback.objects.filter(to_event__exact=concerned_event[0],submiter__exact=str(request.user))
-            print(search[0].rating)
+            
             
             try:
                 search[0].delete()
@@ -271,83 +271,50 @@ def event_edit(request, id):
 def api_resp(request):
     username = None
     password = None
-    # username = request.GET.get('username')
-    # password = request.GET.get('password')
-    # body = json.loads(request.body)
-    # content = body['content']
-    # username = body['username']
-    # password = body['password']
-    try:
-        # asd = request.query_parms.get('content')
-        # body_unicode = request.body.decode('utf-8')
-
-        # data_json = urllib.parse.unquote(body_unicode)
-        data_json = urllib.parse.unquote(request.body.decode('utf-8'))
-        # pdb.set_trace()
-        data = json.loads(data_json)
-        for key in data:
-            # pdb.set_trace()
-            if key == 'username':
-                print(data[key])
-                username = data[key]
-            elif key == 'password':
-                print(data[key])
-                password = data[key]
-            else:
-                responseData = {
-                    'authentication':'False',
-                    'reason': 'Too many params in the request'
-                }
-                return HttpResponse(json.dumps(responseData), content_type="application/json")
-    except:
-        pass
-
-    # print(data)
-    # for i in data:
-    #     if "username=" in i:
-    #         username = i[9:]
-    #         print(username)
-    #     elif "password=" in i:
-    #         password = i[9:]
-    #         print(password)
-    if username is None or password is None:
-        responseData = {
-            'authentication':'False',
-            'reason': 'Username or Password missing in the request'
-        }
-        return HttpResponse(json.dumps(responseData), content_type="application/json")
-
-    user  = authenticate(username =username,password=  password)
-    print(user)
-    event_list = []
-    for i in Event.objects.all():
-        event_list += [i.event_id]
-
     
-    if user is not None:
-        responseData = {
-                'username': username,
-                'password': password,
-                'authenticated':'True',
-                'eventList(example)' : event_list,
-                'eventDates(example)' : [
-                    '201904231415',
-                    '201904292000'
-                ]
+    if request.method == 'POST':
+        try:
+            username = request.POST['username']
+            password = request.POST['password']
+        except:
+            responseData={
+            'response':'error: username or password missing',
+            'expected-structure':{
+                'username':'<username>',
+                'password':'<password>'
+                }
             }
-        return HttpResponse(json.dumps(responseData), content_type="application/json")
+            return HttpResponse(json.dumps(responseData), content_type="application/json")
+
+        user = authenticate(username = username, password = password)
+        if user is not None:
+            responseData={
+                'response':'successfully logged in',
+                'logged-in-as':username
+            }
+            return HttpResponse(json.dumps(responseData), content_type="application/json")
+        else:
+            responseData={
+                'response':'unable to log-in',
+                'reason':'username or password wrong'
+            }
+            return HttpResponse(json.dumps(responseData), content_type="application/json")
+
+
+        
     else:
-        responseData = {
-            'username':username,
-            'password': password,
-            'authenticated':'False',
-            'reason':'Password or Username is incorrect'
+        responseData={
+            'response':'error: send a proper request of type- POST',
+            'expected-structure':{
+                'username':'<username>',
+                'password':'<password>'
+            }
         }
-    return HttpResponse(json.dumps(responseData), content_type="application/json")
+        return HttpResponse(json.dumps(responseData), content_type="application/json")
 @csrf_exempt
 def api_reg(request):
     args={
-            "error":"send a post request of the following type",
+            "error":"send a POST request of the following type",
             "login_request":{
                 "first_name":'<name>',
                 "last_name":'<name>',
@@ -391,11 +358,9 @@ def api_reg(request):
         add_user.save()
         # print(username)
         add_profile = Profile.objects.create(user=add_user,department=dept,program=prog,roll_no=str(roll_no),phone_no=str(phone_no))
-        return HttpResponse(json.dumps({'registration status':"success",'username':username}), content_type="application/json")
-
-
+        return HttpResponse(json.dumps({'registration status':"success",'your-username':username}), content_type="application/json")
 
     else:
         
         return HttpResponse(json.dumps(args), content_type="application/json")
-    return HttpResponse(json.dumps({'naam_bhej na':'chodu'}), content_type="application/json")
+    return HttpResponse(json.dumps({'error':'unknown server error, check back-end code '}), content_type="application/json")
