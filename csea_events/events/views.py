@@ -271,6 +271,55 @@ def event_edit(request, id):
 def api_resp(request):
     username = None
     password = None
+    try:
+        data_json = urllib.parse.unquote(request.body.decode('utf-8'))
+        # pdb.set_trace()
+        data = json.loads(data_json)
+        for key in data:
+            # pdb.set_trace()
+            if key == 'username':
+                print(data[key])
+                username = data[key]
+            elif key == 'password':
+                print(data[key])
+                password = data[key]
+            else:
+                responseData = {
+                    'error_code':1
+                }
+                return HttpResponse(json.dumps(responseData), content_type="application/json")
+    except:
+        pass
+    if username is None or password is None:
+        responseData = {
+            'error_code':2
+        }
+        return HttpResponse(json.dumps(responseData), content_type="application/json")
+ 
+    user  = authenticate(username =username,password=  password)
+    print(user)
+    # q = User.objects.filter(username=username)
+    p = Profile.objects.filter(user = user)[0]
+    if user is not None:
+        responseData = {
+        'error_code':0 ,
+        'username':username,
+        # 'name':q.first_name + " " + q.last_name,
+        'roll':p.roll_no,
+        'branch': p.department,
+        'year':'20'+str(p.roll_no)[0:2],
+        'stream':p.program,
+        'phone':p.phone_no
+        }
+        return HttpResponse(json.dumps(responseData), content_type="application/json")
+    else:
+        responseData = {
+            'error_code':3
+        }
+    return HttpResponse(json.dumps(responseData), content_type="application/json")
+ 
+    username = None
+    password = None
     
     if request.method == 'POST':
         try:
@@ -311,10 +360,13 @@ def api_resp(request):
             }
         }
         return HttpResponse(json.dumps(responseData), content_type="application/json")
+
+
+
 @csrf_exempt
 def api_reg(request):
     args={
-            "error":"send a POST request of the following type",
+            "error":"send a request as following ",
             "login_request":{
                 "first_name":'<name>',
                 "last_name":'<name>',
@@ -326,41 +378,97 @@ def api_reg(request):
                 'phone_no':'<phone>'
             }
         }
-    if request.method == 'POST':
-        try:
-            first_name = request.POST['first_name']
-            last_name = request.POST['last_name']
-            email = request.POST['email']
-            dept = request.POST['dept']
-            prog = request.POST['prog']
-            roll_no = request.POST['roll_no']
-            phone_no = request.POST['phone_no']
-            password = request.POST['password']
-        except:
-            return HttpResponse(json.dumps(args), content_type="application/json")
-        
-        if not first_name or not last_name:
-            return HttpResponse(json.dumps({'error':"first and last name can't be empty"}), content_type="application/json")
-        if not 'iitg.ac.in' in email:
-            return HttpResponse(json.dumps({'error':"use iitg mail only"}), content_type="application/json")
-        if not password:
-            return HttpResponse(json.dumps({'error':"password can't be empty"}), content_type="application/json")
-        if not roll_no or not phone_no or not dept or not prog:
-            return HttpResponse(json.dumps({'error':"some field(s) is/are empty"}), content_type="application/json")
+    
+    try:
+        data_json = urllib.parse.unquote(request.body.decode('utf-8'))
+        # pdb.set_trace()
+        data = json.loads(data_json)
+        for key in data:
+            # pdb.set_trace()
+            if key == 'email':
+                print(data[key])
+                email = data[key]
+            elif key == 'password':
+                print(data[key])
+                password = data[key]
+            elif key == 'first_name':
+                print(data[key])
+                first_name = data[key]
+            elif key == 'last_name':
+                print(data[key])
+                last_name = data[key]
+            elif key == 'dept':
+                print(data[key])
+                dept = data[key]
+            elif key == 'prog':
+                print(data[key])
+                prog=data[key]
+            elif key == 'roll_no':
+                print(data[key])
+                roll_no = data[key]
+            elif key == 'phone_no':
+                print(data[key])
+                phone_no = data[key]
+            else:
+                responseData = {
+                    'error_code':1,
+                    'info':'all keys not found, send a request as follows',
+                    'expected-data':{
+                    "first_name":'<name>',
+                    "last_name":'<name>',
+                    'email':'<mail>@iitg.ac.in',
+                    'password':"<password>",
+                    'dept':'<cse/ece/me/ce/dd/bsbe/cl/cst/eee/ma/ph/rt/hss/enc/env/nt/lst>',
+                    'prog':'<btech/mtech/phd/msc/msr/ma/bdes/mdes>',
+                    'roll_no':'<roll>',
+                    'phone_no':'<phone>'
+                }
 
-        queryset = User.objects.filter(email=email)
-        if queryset.exists():
-            return HttpResponse(json.dumps({'error':"email already active"}), content_type="application/json")
-        username = email.split('@')[0]
-        add_user = User.objects.create_user(username=username, email=email, password=password)
-        add_user.first_name = first_name
-        add_user.last_name = last_name
-        add_user.save()
-        # print(username)
-        add_profile = Profile.objects.create(user=add_user,department=dept,program=prog,roll_no=str(roll_no),phone_no=str(phone_no))
-        return HttpResponse(json.dumps({'registration status':"success",'your-username':username}), content_type="application/json")
+                }
+                return HttpResponse(json.dumps(responseData), content_type="application/json")
 
-    else:
-        
+    except:
+        args = {
+                    'error_code':1,
+                    'info':'all keys not found, send a request as follows',
+                    'expected-data':{
+                    "first_name":'<name>',
+                    "last_name":'<name>',
+                    'email':'<mail>@iitg.ac.in',
+                    'password':"<password>",
+                    'dept':'<cse/ece/me/ce/dd/bsbe/cl/cst/eee/ma/ph/rt/hss/enc/env/nt/lst>',
+                    'prog':'<btech/mtech/phd/msc/msr/ma/bdes/mdes>',
+                    'roll_no':'<roll>',
+                    'phone_no':'<phone>'
+                }
         return HttpResponse(json.dumps(args), content_type="application/json")
+    
+
+    if not first_name or not last_name:
+        return HttpResponse(json.dumps({'error':"first and last name can't be empty"}), content_type="application/json")
+    if not 'iitg.ac.in' in email:
+        return HttpResponse(json.dumps({'error':"use iitg mail only"}), content_type="application/json")
+    if not password:
+        return HttpResponse(json.dumps({'error':"password can't be empty"}), content_type="application/json")
+    if not roll_no or not phone_no or not dept or not prog:
+        return HttpResponse(json.dumps({'error':"some field(s) is/are empty"}), content_type="application/json")
+
+    queryset = User.objects.filter(email=email)
+    if queryset.exists():
+        return HttpResponse(json.dumps({'error':"email already active"}), content_type="application/json")
+    username = email.split('@')[0]
+
+    test = Profile.objects.filter(roll_no__exact=roll_no)
+    if test is not None:
+        return HttpResponse(json.dumps({'error':1,'reason':'roll_no already active'}), content_type="application/json")
+
+    add_user = User.objects.create_user(username=username, email=email, password=password)
+    add_user.first_name = first_name
+    add_user.last_name = last_name
+    add_user.save()
+    # print(username)
+    add_profile = Profile.objects.create(user=add_user,department=dept,program=prog,roll_no=str(roll_no),phone_no=str(phone_no))
+    return HttpResponse(json.dumps({'registration status':"success",'your-username':username}), content_type="application/json")
+
+    
     return HttpResponse(json.dumps({'error':'unknown server error, check back-end code '}), content_type="application/json")
