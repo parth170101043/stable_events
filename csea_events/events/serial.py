@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('url','event_id','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','image_string','comment_for_admin','curr_audience','approval')
+        fields = ('url','requestor','event_id','name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','faq','image_string','comment_for_admin','curr_audience','approval')
 
 class BtechSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +32,7 @@ class PhDSerializer(serializers.ModelSerializer):
 class AppFeedbackserializer(serializers.ModelSerializer):
     class Meta:
         model = AppFeedback
-        fields = ('id','url','content')
+        fields = ('id','url','content','rating_ui','rating_ux','rating_overall')
 
 class EventFeedbackSerializer(serializers.ModelSerializer):
     class Meta:

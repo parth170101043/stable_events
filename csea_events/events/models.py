@@ -129,7 +129,10 @@ class EventFeedback(models.Model):
 
 class AppFeedback(models.Model):
 
-    content = models.TextField(blank=False)
+    content = models.TextField(blank=True)
+    rating_ui = models.FloatField(blank=False, default=3.0)
+    rating_ux = models.FloatField(blank=False, default=3.0)
+    rating_overall = models.FloatField(blank=False, default=3.0)
 
 # {
 #     "name": "null",

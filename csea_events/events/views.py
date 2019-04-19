@@ -24,7 +24,7 @@ class ProfileApi(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 class EventApi(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
+    queryset = Event.objects.all().order_by('-date')
     serializer_class = EventSerializer
 class BtechApi(viewsets.ModelViewSet):
     queryset = Btech.objects.all()
