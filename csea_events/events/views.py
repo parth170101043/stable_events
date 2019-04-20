@@ -177,7 +177,7 @@ def registerPage(request):
             add_user.save()
             # print(username)
             add_profile = Profile.objects.create(user=add_user,department=department,program=program,roll_no=str(roll_no),phone_no=str(phone_no))
-            return redirect('/register/')
+            return redirect('loginPage')
         else:
             return render(request, 'register.html', {'form':rform})
 
@@ -228,10 +228,12 @@ def create_event(request):
     if form.is_valid():
         new_event=form.save()
         new_event.requestor = str(request.user)
+        new_event.faq = new_event.faq_question_1 + "="+new_event.faq_answer_1+"|" + new_event.faq_question_2 + "="+new_event.faq_answer_2+"|"+new_event.faq_question_3 + "="+new_event.faq_answer_3
+        # print(new_event.faq)
         new_event.save()
-        print(new_event.requestor)
+        # print(new_event.requestor)
         form = EventCreatorForm()
-    
+        return redirect('my_events')
     return render(request, 'create_event.html', {'form':form})
 
 
@@ -240,6 +242,30 @@ def create_event(request):
 def poll_view(request, event_id):
     events=Event.objects.filter(event_id=event_id)
     print(events[0].summary)
+    arr = events[0].faq.split('|')
+    for i in arr:
+        i = i.split('=')
+
+    try:
+        faq1=arr[0][0]
+        faq11=arr[0][1]
+    except:
+        faq1=None
+        faq11=""
+    try:
+        faq2=arr[1][0]
+        faq22=arr[1][1]
+    except:
+        faq2=""
+        faq22=""
+    try:
+        faq3=arr[2][0]
+        faq33=arr[2][1]
+    except:
+        faq3=""
+        faq33=""    
+
+
     context = {
         'event_name': events[0].name,
         'event_date': events[0].date,
@@ -248,12 +274,18 @@ def poll_view(request, event_id):
         'organiser':events[0].organisors,
         'contact_info':events[0].contact_info,
         'summary':events[0].summary,
-        'faq':events[0].faq
+        'faq1':faq1,
+        'faq2':faq2,
+        'faq3':faq3,
+        'faq11':faq11,
+        'faq22':faq22,
+        'faq33':faq33
 
     }
     return render(request,'event_info.html',context)
-
-
+@login_required(login_url='loginPage')
+def com(request):
+    return render(request,'event_committe.html',{})
 
 #Function to check all the events by the user
 @login_required(login_url='loginPage')
@@ -317,7 +349,12 @@ def event_edit(request, id):
     instance = get_object_or_404(Event, event_id=id)
     form = EventCreatorForm(request.POST or None, instance=instance)
     if form.is_valid():
-        form.save()
+        new_event=form.save()
+        new_event.requestor = str(request.user)
+        new_event.faq = new_event.faq_question_1 + "="+new_event.faq_answer_1+"|" + new_event.faq_question_2 + "="+new_event.faq_answer_2+"|"+new_event.faq_question_3 + "="+new_event.faq_answer_3
+        print(new_event.faq)
+        new_event.save()
+        print(new_event.requestor)
         return redirect('my_events')
     return render(request, 'create_event.html', {'form':form})
 

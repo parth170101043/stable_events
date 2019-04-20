@@ -54,7 +54,7 @@ User = get_user_model()
 class EventCreatorForm(ModelForm):
     class Meta:
         model = models.Event
-        fields =['name','fee','capacity','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2']
+        fields =['name','fee','capacity','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2','faq_question_3','faq_answer_3']
 
 #It is a container that maps the shortforms of the dept names with the dept names.
 department_values = (
