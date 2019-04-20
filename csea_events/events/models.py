@@ -110,8 +110,8 @@ class Event(models.Model):
 
 
     def __str__(self):
-        return self.name
-
+        shown_name = "("+str(dict((('Appr','Approved'),('Pend','Pending'),('Decl','Declined'))).get(self.approval))+")" + "   "+str(self.name)
+        return shown_name
 
 class Poll(models.Model):
 
@@ -141,7 +141,7 @@ class EventFeedback(models.Model):
 
     content = models.TextField(blank=False)
     submiter = models.CharField(max_length=100, blank=True)
-    rating = models.IntegerField()
+    rating = models.FloatField()
     to_event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     def __str__(self):

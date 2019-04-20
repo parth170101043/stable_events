@@ -15,7 +15,7 @@ class LoginForm(forms.Form):
 
 class FeedbackForm(forms.Form):
     content = forms.CharField( widget=forms.Textarea(attrs={'placeholder':'Enter your comments'}) )
-    rating = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder':'Enter a rating between 1 and 5'}),max_value=5, min_value=1)
+    rating = forms.FloatField(widget=forms.NumberInput(attrs={'placeholder':'Enter a rating between 1 and 5'}),max_value=5, min_value=1)
 
 User = get_user_model()
 
