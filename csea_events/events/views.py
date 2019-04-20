@@ -209,7 +209,7 @@ def api_change_pw(request):
         pass
 
     user = authenticate(username= username,password=old_password)
-    
+
     if user is None:
         return HttpResponse(json.dumps({'error':'wrong username or password'}), content_type="application/json")
 
@@ -342,7 +342,10 @@ def api_resp(request):
     user  = authenticate(username =username,password=  password)
     print(user)
     # q = User.objects.filter(username=username)
-    p = Profile.objects.filter(user = user)[0]
+    p = Profile.objects.filter(user = user)
+    if p.count() == 0:
+        return HttpResponse(json.dumps({'error':'user+password combination wrong'}), content_type="application/json")
+    p=p[0]
     if user is not None:
         responseData = {
         'error_code':0 ,
