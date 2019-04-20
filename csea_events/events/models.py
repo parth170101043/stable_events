@@ -82,7 +82,7 @@ class Event(models.Model):
     time = models.TimeField(auto_now=False, auto_now_add=False, blank=False, null=True)
     summary = models.TextField(blank=False, null=True)
     faq = models.TextField(blank=True, null=True)
-    tags = models.CharField(max_length=300, help_text=' (Press Ctrl to select multiple)')
+    tags = models.CharField(max_length=300, help_text=' (Press Ctrl to select multiple)',blank=True)
     organisors = models.CharField(max_length=300)
     contact_info = models.CharField(max_length=300)
     venue = models.CharField(max_length=50, choices=venue_choices,default='CSE Seminar Room')

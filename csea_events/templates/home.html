@@ -16,6 +16,7 @@
         
             <div class='ui segment'>
                 {% for i in events%}
+                {% if i.approval == 'Appr' %}
                 <div class='ui segment'>
                     <h3 class='ui header'>Event Name: {{ i.name}}</h3>
                     <h3 class='ui header'>Date: {{ i.date}}</h3>
@@ -30,6 +31,7 @@
                     <!-- <a href='#' class='ui tiny basic button'>See feedback</a> -->
                     {% endif %}
                 </div>
+                {% endif %}
                 {% endfor%}
             </div>
     </div>
