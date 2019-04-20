@@ -3,7 +3,7 @@ from events.models import Event, Btech, Mtech, PhD, AppFeedback, Profile, EventF
 # Register your models here.
 
 class EventAdmin(admin.ModelAdmin):  
-  list_display = ('approval','name','date','time')
+  list_display = ('approval','venue','date','time','requestor','name')
   ordering = ('approval',) # The negative sign indicate descendent order
 
 admin.site.register(EventFeedback)
