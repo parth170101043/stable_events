@@ -45,7 +45,8 @@ venue_choices =(
     ('Core 5 Rooms','Core 5 Rooms'),
     ('Mini Auditorium','Mini Auditorium'),
     ('Main Auditorium','Main Auditorium'),
-    ('Department Library','Department Library')
+    ('Department Library','Department Library'),
+    ('None',"None")
 )
 # Create your models here.
 class Btech(models.Model):
@@ -91,7 +92,7 @@ class Event(models.Model):
     comment_for_admin = models.CharField(max_length=300)
     approval = models.CharField(max_length=50, choices = (('Appr','Approved'),('Pend','Pending'),('Decl','Declined')), default='Pend')
     requestor = models.CharField(max_length=100, blank=True)
-    curr_audience = models.IntegerField(blank=True, null=True)
+    curr_audience = models.IntegerField(blank=False, default=0)
     image_string = models.TextField(blank=True, default= "None")
     faq_question_1 = models.CharField(max_length=500,blank=True)
     faq_question_2 = models.CharField(max_length=500,blank=True)
