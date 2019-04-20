@@ -77,7 +77,7 @@ class Event(models.Model):
     capacity  = models.PositiveIntegerField()
     # target_audience = models.CharField(max_length=300)
     date = models.DateField(null = False, blank = False)
-    time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
+    time = models.TimeField(auto_now=False, auto_now_add=False, blank=False, null=True)
     summary = models.TextField(blank=False, null=True)
     faq = models.TextField(blank=True, null=True)
     tags = models.CharField(max_length=300, help_text=' (Press Ctrl to select multiple)')
