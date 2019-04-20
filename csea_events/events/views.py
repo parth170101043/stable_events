@@ -179,7 +179,7 @@ def registerPage(request):
         else:
             return render(request, 'register.html', {'form':rform})
 
-
+@csrf_exempt
 def api_change_pw(request):
 
     username = None
@@ -206,7 +206,7 @@ def api_change_pw(request):
                 }
                 return HttpResponse(json.dumps(responseData), content_type="application/json")
     except:
-        pass
+        return HttpResponse(json.dumps({'error':'unexpected error occured'}), content_type="application/json")
 
     user = authenticate(username= username,password=old_password)
 
@@ -215,6 +215,7 @@ def api_change_pw(request):
 
     else:
         user.set_password(new_password)
+        
         return HttpResponse(json.dumps({'response':'password successfully changed'}), content_type="application/json")
 
 
