@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from . import models
-from .models import Event, Poll, Vote
+from .models import Event, Poll, Vote, Profile
 from django.forms import formset_factory, modelformset_factory
 
 
@@ -115,8 +115,17 @@ class RegisterForm(forms.Form):
         if queryset.exists():
             print(1)
             raise forms.ValidationError("Email already active")
-        return email
-
+        if 'iitg.ac.in' in email:
+            return email
+        if 'iitg.ernet.in' in email:
+            return email.split('@')[0]+'@iitg.ac.in'
+        else:
+            raise forms.ValidationError("Please use an IITG Mail")
+    def clean_roll_no(self):
+        profs = Profile.objects.filter(roll_no__exact=self.cleaned_data.get('roll_no'))
+        if profs.count() != 0:
+            raise forms.ValidationError('Roll no already active')
+        return self.cleaned_data.get('roll_no')
     def clean_confirm_password(self):
         passw = self.cleaned_data.get('confirm_password')
         passw_orig = self.cleaned_data.get('password')

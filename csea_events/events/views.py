@@ -112,8 +112,13 @@ def feedback_view(request, id):
 
 @login_required(login_url='loginPage')
 def profile_view(request):
-    prof = Profile.objects.filter(user=request.user)[0]
-    return render(request, 'profile.html',{'username':request.user,'email':request.user.email,'first_name':request.user.first_name,'last_name':request.user.last_name,'phone_no':prof.phone_no,'roll_no':prof.roll_no,'dept':prof.roll_no,'dept':prof.department,'course':prof.program,})
+    try:
+        prof = Profile.objects.filter(user=request.user)[0]
+        return render(request, 'profile.html',{'username':request.user,'email':request.user.email,'first_name':request.user.first_name,'last_name':request.user.last_name,'phone_no':prof.phone_no,'roll_no':prof.roll_no,'dept':prof.roll_no,'dept':prof.department,'course':prof.program,})
+    except:
+        return render(request, 'profile.html',{'username':request.user,'email':request.user.email,'first_name':request.user.first_name,'last_name':request.user.last_name,})
+  
+    
 
 
 

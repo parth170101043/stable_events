@@ -110,8 +110,7 @@ class Event(models.Model):
 
 
     def __str__(self):
-        shown_name = "("+str(dict((('Appr','Approved'),('Pend','Pending'),('Decl','Declined'))).get(self.approval))+")" + "   "+str(self.name)
-        return shown_name
+         return self.name
 
 class Poll(models.Model):
 
