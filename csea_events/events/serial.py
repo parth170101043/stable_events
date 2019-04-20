@@ -32,7 +32,7 @@ class PhDSerializer(serializers.ModelSerializer):
 class AppFeedbackserializer(serializers.ModelSerializer):
     class Meta:
         model = AppFeedback
-        fields = ('id','url','content','rating_ui','rating_ux','rating_overall')
+        fields = ('id','url','content','rating_ui','rating_ux','rating_overall','submitted_by')
 
 class EventFeedbackSerializer(serializers.ModelSerializer):
     class Meta:

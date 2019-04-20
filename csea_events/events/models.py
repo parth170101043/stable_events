@@ -153,6 +153,7 @@ class AppFeedback(models.Model):
     rating_ui = models.FloatField(blank=False, default=3.0)
     rating_ux = models.FloatField(blank=False, default=3.0)
     rating_overall = models.FloatField(blank=False, default=3.0)
+    submitted_by= models.CharField(max_length=150,blank=False, default='Anonymous')
 
 
 class Vote(models.Model):
