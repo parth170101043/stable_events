@@ -57,7 +57,7 @@
                         <a href="#" class='ui tiny primary basic button'>Poll</a>
                         <!-- <a href='#' class='ui tiny orange basic button'>Edit Request</a>    -->
                         <!-- <a href='#' class='ui tiny primary basic button'>Give Feedback</a> -->
-                        <a href='#' class='ui tiny purple basic button'>See feedback</a>
+                        <a href='{% url "see_feedback" i.event_id %}' class='ui tiny purple basic button'>See feedback</a>
                     </div>
                     {% endfor%}
                     {% if events_future is None %}

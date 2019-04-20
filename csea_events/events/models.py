@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 from django.contrib.auth.models import User
+# Create your models here.
+#Btech is defined as a model and name is the only field in this model
 department_values = (
         ('cse', 'Computer Science & Engineering'),
         ('ece', 'Electronics & Communication Engineering'),
@@ -54,19 +56,19 @@ class Btech(models.Model):
 
     def __str__(self):
         return self.name
-
+#Mtech is defined as a model and name is the only field in this model
 class Mtech(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
+#PhD is defined as a model and name is the only field in this model
 class PhD(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
+#Event is defined as a model and name,event_id,fee,capacity etc. are the fields in this model
 class Event(models.Model):
 
     # todo, extend and test by sunday
@@ -111,7 +113,7 @@ class Event(models.Model):
 
     def __str__(self):
          return self.name
-
+#Poll is defined as a model and all the details which are required for polling are added as fields in the model
 class Poll(models.Model):
 
     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4 ,help_text='Unique poll id')
@@ -124,6 +126,7 @@ class Poll(models.Model):
     def __str__(self):
         return str(self.event_id)
 
+#Profile is defined as a model and user, department of the user, program, roll number and phone number of the user are the fields in this model
 
 class Profile(models.Model):
 
@@ -135,7 +138,7 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user)
-
+#EventFeedback is defined as a model and content, submitter, rating and to which event are the fields in this model
 class EventFeedback(models.Model):
 
     content = models.TextField(blank=False)
@@ -146,7 +149,7 @@ class EventFeedback(models.Model):
     def __str__(self):
         name = str(self.submiter)+ "<=User|Event=> "+ str(self.to_event)
         return name
-
+#AppFeedback is defined as a model and content is the only field in this model.
 class AppFeedback(models.Model):
 
     content = models.TextField(blank=True)

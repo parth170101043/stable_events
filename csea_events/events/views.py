@@ -18,7 +18,7 @@ from django.contrib.auth import update_session_auth_hash
 #
 
 
-
+# API viewsets for the android app
 
 class ProfileApi(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -51,7 +51,7 @@ class EventFeedbackApi(viewsets.ModelViewSet):
 def loginPage(request):
     lform = LoginForm(request.POST or None)
     context ={'form':lform}
-   
+   #If the user is logged in then it will redirected to homepage
     if request.user.is_authenticated:
         return redirect('home_page')
 
@@ -75,7 +75,9 @@ def loginPage(request):
 
 User = get_user_model()
 
-
+#Once the user is logged in then the feedback can be given by the user 
+#In the feedback form the user can give ratings and he can even add some content
+#This function checks each and every case like whether the form and details are valid or not
 @login_required(login_url='loginPage')
 def feedback_view(request, id):
     if request.method == 'GET':
@@ -109,7 +111,7 @@ def feedback_view(request, id):
 
 
 
-
+#Profile of the user will be displayed
 @login_required(login_url='loginPage')
 def profile_view(request):
     try:
@@ -143,7 +145,7 @@ def profile_view(request):
         
 #         print(add_user)
 #     return render(request, 'register.html', context)
-
+#This function adds all the details given by the user in the register form and stores it
 def registerPage(request):
 
     if request.method == 'GET':
@@ -215,10 +217,10 @@ def api_change_pw(request):
 
     else:
         user.set_password(new_password)
-        
+
         return HttpResponse(json.dumps({'response':'password successfully changed'}), content_type="application/json")
 
-
+#Function to create an event and requesting the access by the user
 @login_required(login_url='loginPage')
 def create_event(request):
     form = EventCreatorForm(request.POST or None)
@@ -233,7 +235,7 @@ def create_event(request):
     return render(request, 'create_event.html', {'form':form})
 
 
-
+#Function to update the events info and take the polling updates
 @login_required(login_url='loginPage')
 def poll_view(request, event_id):
     events=Event.objects.filter(event_id=event_id)
@@ -243,6 +245,7 @@ def poll_view(request, event_id):
         'event_date': events[0].date,
         'event_time': events[0].time,
         'event_fee':events[0].fee,
+        'organiser':events[0].organisors,
         'contact_info':events[0].contact_info,
         'summary':events[0].summary,
         'faq':events[0].faq
@@ -251,6 +254,16 @@ def poll_view(request, event_id):
     return render(request,'event_info.html',context)
 
 
+
+#Function to check all the events by the user
+@login_required(login_url='loginPage')
+def feedback(request,event_id):
+    events_past = Event.objects.filter(event_id=event_id)[0]
+    # req_event=events_past.filter(event_id=event_id)
+    feedbacks = EventFeedback.objects.filter(to_event=events_past)
+    return render(request,'see_feedback.html',{'display_id':str(request.user), 'events_today':feedbacks,})
+
+    
 @login_required(login_url='loginPage')
 def my_events(request):
     events_past = Event.objects.filter(requestor__exact=request.user, date__lt=date.today()).order_by('-date')
@@ -274,14 +287,14 @@ def past(request):
     events=Event.objects.filter(date__lt=date.today()).order_by('-date') 
     return render(request, 'past.html', {'display_id':str(request.user), 'events':events})
 
-
+#Function to logout of the account
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('loginPage')
 
 
-
+#Function that enables the user to change the password
 @login_required(login_url='loginPage')
 def change_password(request):
     if request.method=='POST':
@@ -299,7 +312,7 @@ def change_password(request):
         return render(request,'change_password.html',args)
 
 
-
+#Function to edit the details of an event
 def event_edit(request, id): 
     instance = get_object_or_404(Event, event_id=id)
     form = EventCreatorForm(request.POST or None, instance=instance)
@@ -310,7 +323,7 @@ def event_edit(request, id):
 
 
 
-
+#Function to login and also to check the validity of the details of the user
 @csrf_exempt
 def api_resp(request):
     username = None
@@ -409,7 +422,8 @@ def api_resp(request):
         return HttpResponse(json.dumps(responseData), content_type="application/json")
 
 
-
+#function to register and check the validity of the details given by the user
+#If the details are not valid then displays the message to change that details in that field.
 @csrf_exempt
 def api_reg(request):
     args={

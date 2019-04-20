@@ -3,14 +3,15 @@
   <body class='text-centre'>
     
     <div class='col-sm-1'></div>
-      <div class='col-sm-9'>
-          <h1 >Name: {{event_name}}</h1>
-          <h1 >Date: {{event_date}}</h1>
-          <h1 >Time: {{event_time}}</h1>
-          <h1 >Fee: {{event_fee}}</h1>
-          <h1>Contact: {{ contact_info}}</h1>
-          <h1>Summary</h1><p>{{summary}}</p>
-          <h1>FAQ</h1><p>{{faq}}</p>
-          <!-- <h1>FAQ</h1><p>{{faq}}</p> -->
+      <div class='col-sm-9 ui segment'>
+          <h2 >Name: {{event_name}}</h2>
+          <h2 class='ui header'>Date: {{event_date}}</h2>
+          <h2 class='ui header'>Time: {{event_time}}</h2>
+          <h2 class='ui header'>Fee: {{event_fee}}</h2>
+          <h2>Organiser: {{organiser}}</h2>
+          <h2>Contact: {{ contact_info}}</h2>
+          <h2>Summary</h2><p>{{summary}}</p>
+          <h2>FAQ</h2><p>{{faq}}</p>
+          <!-- <h2>FAQ</h2><p>{{faq}}</p> -->
         </form>
 {%endblock%}  

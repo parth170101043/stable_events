@@ -40,6 +40,7 @@ urlpatterns = [
     path('poll/<uuid:event_id>/vote',views.poll_vote,name='poll_count_vote'),
     path('poll/<uuid:event_id>/modify',views.poll_modify,name='poll_count_modify'),
     path('api-change-pw/',views.api_change_pw),
+    path('my-events/<uuid:event_id>',views.feedback,name='see_feedback'),
 
     
 ]

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from . import models
 from .models import Event, Poll, Vote, Profile
 from django.forms import formset_factory, modelformset_factory
-
+#Creation of a form for the login page using email and password
 
 class LoginForm(forms.Form):
     email = forms.CharField(widget=forms.TextInput(attrs={
@@ -12,7 +12,7 @@ class LoginForm(forms.Form):
                 'placeholder':'Your @iitg email'
             }), required=True)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Your password'}), required=True)
-
+#A form is created for the users to give the feedback of any event and to discuss their views.
 class FeedbackForm(forms.Form):
     content = forms.CharField( widget=forms.Textarea(attrs={'placeholder':'Enter your comments'}) )
     rating = forms.FloatField(widget=forms.NumberInput(attrs={'placeholder':'Enter a rating between 1 and 5'}),max_value=5, min_value=1)
@@ -50,12 +50,13 @@ User = get_user_model()
 #         return passw
 
 
+#It is a form that creates the fields and dictionary to all of the depts and programs.
 class EventCreatorForm(ModelForm):
     class Meta:
         model = models.Event
         fields =['name','fee','capacity','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2']
 
-
+#It is a container that maps the shortforms of the dept names with the dept names.
 department_values = (
         ('cse', 'Computer Science & Engineering'),
         ('ece', 'Electronics & Communication Engineering'),
@@ -85,8 +86,10 @@ program_values = (
         ('bdes', 'BDes'),
         ('mdes', 'MDes')
     )
+#The form is created for the user to register with all the details of them like first name,last name,roll number etc before logging.
 
 class RegisterForm(forms.Form):
+    #These are the fields which are to be filled by the user to register before he/she logs into the account.
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your First Name'}),
                            required=True)
     last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Last Name'}),
@@ -106,6 +109,7 @@ class RegisterForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Your password'}), required=True)
     confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(
         attrs={'class': 'form-control', 'placeholder': 'Your password (again)'}), required=True)
+#If other person already registers with the same email id then the function will display to register with a different email id
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -126,6 +130,7 @@ class RegisterForm(forms.Form):
         if profs.count() != 0:
             raise forms.ValidationError('Roll no already active')
         return self.cleaned_data.get('roll_no')
+        #If the passwords in the two fields given by the user doesnot match then it will display it on the screen. 
     def clean_confirm_password(self):
         passw = self.cleaned_data.get('confirm_password')
         passw_orig = self.cleaned_data.get('password')
