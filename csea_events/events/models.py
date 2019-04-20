@@ -33,6 +33,20 @@ program_values = (
         ('bdes', 'BDes'),
         ('mdes', 'MDes')
     )
+
+venue_choices =(
+    ('Lecture Hall 1','Lecture Hall 1'),
+    ('Lecture Hall 2','Lecture Hall 2'),
+    ('Lecture Hall 3','Lecture Hall 3'),
+    ('Lecture Hall 4','Lecture Hall 4'),
+    ('Conference Room','Conference Room'),
+    ('CSE Seminar Room','CSE Seminar Room'),
+    ('Core 2 Rooms','Core 2 Rooms'),
+    ('Core 5 Rooms','Core 5 Rooms'),
+    ('Mini Auditorium','Mini Auditorium'),
+    ('Main Auditorium','Main Auditorium'),
+    ('Department Library','Department Library')
+)
 # Create your models here.
 class Btech(models.Model):
     name = models.CharField(max_length=100)
@@ -60,15 +74,15 @@ class Event(models.Model):
     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular event', blank=True)
     fee = models.PositiveIntegerField()
     capacity  = models.PositiveIntegerField()
-    target_audience = models.CharField(max_length=300)
+    # target_audience = models.CharField(max_length=300)
     date = models.DateField(null = False, blank = False)
     time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    summary = models.TextField(blank=True, null=True)
+    summary = models.TextField(blank=False, null=True)
     faq = models.TextField(blank=True, null=True)
     tags = models.CharField(max_length=300, help_text=' (Press Ctrl to select multiple)')
     organisors = models.CharField(max_length=300)
     contact_info = models.CharField(max_length=300)
-    venue = models.CharField(max_length=50, choices=(('L1','Lecture Hall 1'),('L2','Lecture Hall 2'),('L1','Lecture Hall 3'),('L1','Lecture Hall 4'),('Audi','Auditorium')),default='Audi')
+    venue = models.CharField(max_length=50, choices=venue_choices,default='CSE Seminar Room')
     # requester = models.ForeignKey(User, unique=True, on_delete=models.CASCADE, default=None)
     invitees_btech = models.ManyToManyField(Btech, help_text=' (Press Ctrl to select multiple)', blank=True)
     invitees_mtech = models.ManyToManyField(Mtech, help_text=' (Press Ctrl to select multiple)', blank=True)

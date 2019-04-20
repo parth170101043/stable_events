@@ -221,7 +221,7 @@ def my_events(request):
 
 @login_required(login_url='loginPage')
 def home_page(request):
-    events=Event.objects.filter(date__gte=date.today()).order_by('-date') 
+    events=Event.objects.filter(date__gte=date.today()).order_by('date') 
     return render(request, 'home.html', {'display_id':str(request.user), 'events':events})
 
 

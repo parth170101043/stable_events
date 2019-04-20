@@ -53,7 +53,7 @@ User = get_user_model()
 class EventCreatorForm(ModelForm):
     class Meta:
         model = models.Event
-        fields =['name','fee','capacity','target_audience','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2']
+        fields =['name','fee','capacity','date','time','venue','tags','invitees_btech','invitees_mtech','invitees_phd','organisors','contact_info','summary','comment_for_admin','faq_question_1','faq_answer_1','faq_question_2','faq_answer_2']
 
 
 department_values = (
