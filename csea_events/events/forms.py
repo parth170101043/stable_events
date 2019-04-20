@@ -14,8 +14,8 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Your password'}), required=True)
 
 class FeedbackForm(forms.Form):
-    content = forms.CharField( widget=forms.Textarea )
-    rating = forms.IntegerField(max_value=10, min_value=0)
+    content = forms.CharField( widget=forms.Textarea(attrs={'placeholder':'Enter your comments'}) )
+    rating = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder':'Enter a rating between 1 and 5'}),max_value=5, min_value=1)
 
 User = get_user_model()
 

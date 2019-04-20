@@ -84,7 +84,7 @@ def feedback_view(request, id):
         try:
             form = FeedbackForm(initial={'rating':feeds[0].rating,'content':feeds[0].content})
         except:
-            form = FeedbackForm(initial={'rating':5})
+            form = FeedbackForm()
         return render(request,'feedback.html',{'form':form})
     else:
         form = FeedbackForm(request.POST)
