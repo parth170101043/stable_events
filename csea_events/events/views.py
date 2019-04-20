@@ -180,6 +180,43 @@ def registerPage(request):
             return render(request, 'register.html', {'form':rform})
 
 
+def api_change_pw(request):
+
+    username = None
+    old_password = None
+    new_password = None
+    try:
+        data_json = urllib.parse.unquote(request.body.decode('utf-8'))
+        # pdb.set_trace()
+        data = json.loads(data_json)
+        for key in data:
+            # pdb.set_trace()
+            if key == 'username':
+                print(data[key])
+                username = data[key]
+            elif key == 'old_password':
+                print(data[key])
+                password = data[key]
+            elif key == 'new_password':
+                print(data[key])
+                password = data[key]
+            else:
+                responseData = {
+                    'error_code':1
+                }
+                return HttpResponse(json.dumps(responseData), content_type="application/json")
+    except:
+        pass
+
+    user = authenticate(username= username,password=old_password)
+    
+    if user is None:
+        return HttpResponse(json.dumps({'error':'wrong username or password'}), content_type="application/json")
+
+    else:
+        user.set_password(new_password)
+        return HttpResponse(json.dumps({'response':'password successfully changed'}), content_type="application/json")
+
 
 @login_required(login_url='loginPage')
 def create_event(request):
