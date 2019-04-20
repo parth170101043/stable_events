@@ -35,7 +35,10 @@ urlpatterns = [
     path('my-events/',views.my_events,name='my_events'),
     path('event/edit/<uuid:id>',views.event_edit,name='event_edit'),
     path('feedback/<uuid:id>',views.feedback_view,name='feedback'),
-    path('acceptor/',views.api_reg)
+    path('acceptor/',views.api_reg),
+    path('poll/<uuid:event_id>/',views.poll_count_view,name='poll_count'),
+    path('poll/<uuid:event_id>/vote',views.poll_vote,name='poll_count_vote'),
+    path('poll/<uuid:event_id>/modify',views.poll_modify,name='poll_count_modify'),
 
     
 ]

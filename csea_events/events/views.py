@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .forms import LoginForm, RegisterForm, EventCreatorForm, FeedbackForm
+from .forms import LoginForm, RegisterForm, EventCreatorForm, FeedbackForm, PollCreatorForm
 from django.contrib.auth import authenticate, login, get_user_model, logout
 import json
 from django.http import JsonResponse
 import urllib.parse
 from django.contrib.auth.decorators import login_required
-from .models import Event, Btech, Mtech, PhD, AppFeedback, Profile, EventFeedback
+from .models import Event, Btech, Mtech, PhD, AppFeedback, Profile, EventFeedback, Poll, Vote
 from  django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework import viewsets, permissions
@@ -460,3 +460,116 @@ def api_reg(request):
 
     
     return HttpResponse(json.dumps({'error':'unknown server error, check back-end code '}), content_type="application/json")
+
+
+
+
+@login_required(login_url='loginPage')
+def poll_count_view(request,event_id):
+    poll= Event.objects.filter(event_id=event_id)
+    temp=Poll.objects.filter(event_id=event_id)
+    if not temp:
+        temp = Poll(event_id=event_id,response_coming=0,response_not_coming=0,response_not_sure=0)
+        response_coming=temp.response_coming
+        response_not_coming=temp.response_not_coming
+        response_not_sure=temp.response_not_sure
+        id_event=temp.event_id
+        temp.save()
+    else:
+            response_coming=temp[0].response_coming
+            response_not_coming=temp[0].response_not_coming
+            response_not_sure=temp[0].response_not_sure
+            id_event=temp[0].event_id   
+       # print(temp.event_id)
+    context = {
+        'response_coming' : response_coming,
+        'response_not_coming' : response_not_coming,
+        'response_not_sure' : response_not_sure ,
+        'kk':id_event,
+
+    }  
+    #temp.save()    
+    return render(request,'poll_view.html',context)
+
+@login_required(login_url='loginPage')
+def poll_vote(request,event_id):   
+    poll=Poll.objects.get(event_id=event_id)
+    id_user=str(request.user)
+    temp1=Poll.objects.filter(event_id=event_id)
+    flag=0
+    temp_str=str(temp1[0].user_id)
+    if (temp_str.find(id_user)!=-1):
+        flag=1
+    else :
+        pass    
+
+    if (flag==0):
+        poll.user_id=poll.user_id + id_user + ', '
+        vote=Vote(vote_id=event_id,user_id=id_user,user_vote=4)
+        form = PollCreatorForm(data=request.POST)
+
+        if(request.method=='POST'):
+            if form.is_valid():
+                data_temp=form.save(event_id,poll,request)
+                #poll.save()
+                if (data_temp=='response_not_coming'):
+                    vote.user_vote=1
+                elif (data_temp=='response_coming'):
+                    vote.user_vote=2
+                else:
+                    vote.user_vote=3      
+                vote.save()      
+                form = PollCreatorForm()
+                return redirect('poll_count',event_id)
+            else :
+                return redirect('poll_count_vote', event_id)
+    else :
+        context ={
+            'kk':event_id,
+            'everything':id_user
+        }
+        return render(request,'done.html',context=context)        
+    return render(request, 'poll_vote.html', {'form':form})
+
+@login_required(login_url='loginPage')
+def poll_modify(request,event_id):
+    id_user=request.user
+    vote=Vote.objects.filter(vote_id=event_id,user_id=id_user)
+
+    if vote:
+        poll=Poll.objects.filter(event_id=event_id)
+        # temp_data=vote[0].user_vote
+        
+        # if (temp_data==1):
+        #     poll[0].response_not_coming=poll[0].response_not_coming -1
+        # elif (temp_data==2):
+        #     poll[0].response_coming=poll[0].response_coming - 1
+        # else :
+        #     poll[0].response_not_sure=poll[0].response_not_sure -1 
+        # poll[0].save()
+        form = PollCreatorForm(data=request.POST)
+
+        if(request.method=='POST'):
+            if form.is_valid():
+                data_temp=form.save(event_id,poll[0],request)
+                #poll.save()
+                if (data_temp=='response_not_coming'):
+                    vote[0].user_vote=1
+                elif (data_temp=='response_coming'):
+                    vote[0].user_vote=2
+                else:
+                    vote[0].user_vote=3      
+                vote[0].save()      
+                form = PollCreatorForm()
+                return redirect('poll_count',event_id)
+            else :
+                return redirect('poll_count_vote', event_id)
+    else :
+        context = {
+            'kk' : event_id,
+        }
+        return render(request,'error.html',context)  
+
+    return render(request, 'poll_vote.html', {'form':form})
+  
+    

@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from . import models
-from .models import Event
+from .models import Event, Poll, Vote
 from django.forms import formset_factory, modelformset_factory
 
 
@@ -125,3 +125,37 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError('Both passwords must match')
 
         return passw
+
+
+class PollCreatorForm(forms.Form):
+    choices=[
+        ('response_not_coming','Not Coming'),
+        ('response_coming','Coming'),
+        ('response_not_sure','Not Sure'),
+    ]
+    f_value=forms.ChoiceField(choices=choices)
+
+    def save(self,event_id,poll,request):
+        vote=Vote.objects.filter(vote_id=event_id,user_id=str(request.user))
+        cleaned_data=self.cleaned_data.get('f_value')
+        if vote:
+            temp_data=vote[0].user_vote
+        
+            if (temp_data==1):
+                poll.response_not_coming=poll.response_not_coming -1
+            elif (temp_data==2):
+                poll.response_coming=poll.response_coming - 1
+            else :
+                poll.response_not_sure=poll.response_not_sure -1 
+        else :
+            pass   
+            
+        if (cleaned_data=='response_not_coming'):
+            poll.response_not_coming=poll.response_not_coming + 1 
+        elif (cleaned_data=='response_coming'):
+            poll.response_coming = poll.response_coming + 1
+        else:
+            poll.response_not_sure= poll.response_not_sure + 1
+        poll.save()
+        return cleaned_data
+

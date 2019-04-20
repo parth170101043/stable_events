@@ -100,10 +100,16 @@ class Event(models.Model):
 
 class Poll(models.Model):
 
-    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4 ,help_text='Unique poll id')
     response_coming = models.PositiveIntegerField()
     response_not_coming  = models.PositiveIntegerField()
     response_not_sure = models.PositiveIntegerField()
+    user_id=models.CharField(max_length=300,default='')
+
+
+    def __str__(self):
+        return str(self.event_id)
+
 
 class Profile(models.Model):
 
@@ -134,6 +140,14 @@ class AppFeedback(models.Model):
     rating_ux = models.FloatField(blank=False, default=3.0)
     rating_overall = models.FloatField(blank=False, default=3.0)
 
+
+class Vote(models.Model):
+    vote_id=models.UUIDField(primary_key=False, default=uuid.uuid4,help_text='Unique vote id')
+    user_id=models.CharField(max_length=300,default='')
+    user_vote=models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.vote_id)
 # {
 #     "name": "null",
 #     "fee": 12,
